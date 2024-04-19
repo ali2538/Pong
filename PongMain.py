@@ -32,6 +32,9 @@ def play_pong():
             pygame.draw.rect(screen, DASHED_LINE_COLOR, dashed_line_dot)
         pong_ball.move(screen)
         pygame.display.flip()
+        if pong_ball.check_position():
+            new_ball = True
+            del pong_ball
         clock.tick(60)
 
     pygame.quit()
