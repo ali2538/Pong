@@ -9,7 +9,7 @@ def play_pong():
     SCREEN_HEIGHT = 600
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
-    DASHED_LINE_COLOR = (204, 204, 204)
+    DASHED_LINE_COLOR = (88, 94, 90)
 
     pygame.init()
 
@@ -28,7 +28,7 @@ def play_pong():
         screen.fill(color=BLACK)
         # draw a line in the middle of the screen
         for ht in range(0, 600, 41):
-            dashed_line_dot = pygame.Rect(500, ht, 20, 20)
+            dashed_line_dot = pygame.Rect(505, ht, 10, 20)
             pygame.draw.rect(screen, DASHED_LINE_COLOR, dashed_line_dot)
         pong_ball.move(screen)
         pygame.display.flip()
