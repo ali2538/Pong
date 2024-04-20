@@ -1,6 +1,7 @@
 import pygame
 import constants
 from Ball import Ball
+from Paddle import Paddle
 
 
 def play_pong():
@@ -13,14 +14,22 @@ def play_pong():
 
     new_ball = True
     pong_ball = None
+    new_game = True
+    pad1 = Paddle(constants.LEFT_SIDE_PAD, "player1")
+    print(pad1)
+    pad2 = Paddle(constants.RIGHT_SIDE_PAD, "player2")
+    print(pad2)
     while still_playing:
+        screen.fill(color=constants.BLACK)
+        pad1.draw(screen)
+        pad2.draw(screen)
         if new_ball:
             pong_ball = Ball(screen)
             new_ball = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 still_playing = False
-        screen.fill(color=constants.BLACK)
+
         # draw a line in the middle of the screen
         for ht in range(0, 600, 41):
             dashed_line_dot = pygame.Rect(505, ht, 10, 20)

@@ -11,6 +11,9 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 DASHED_LINE_COLOR = (88, 94, 90)
 
+LEFT_SIDE_PAD = "left"
+RIGHT_SIDE_PAD = "right"
+
 INITIAL_ANGLES_TO_AVOID = [
     70,
     75,
