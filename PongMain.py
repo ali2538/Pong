@@ -1,19 +1,14 @@
 import pygame
-
+import constants
 from Ball import Ball
 
 
 def play_pong():
     still_playing = True
-    SCREEN_WIDTH = 1020
-    SCREEN_HEIGHT = 600
-    BLACK = (0, 0, 0)
-    WHITE = (255, 255, 255)
-    DASHED_LINE_COLOR = (88, 94, 90)
 
     pygame.init()
 
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
     clock = pygame.time.Clock()
 
     new_ball = True
@@ -25,11 +20,11 @@ def play_pong():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 still_playing = False
-        screen.fill(color=BLACK)
+        screen.fill(color=constants.BLACK)
         # draw a line in the middle of the screen
         for ht in range(0, 600, 41):
             dashed_line_dot = pygame.Rect(505, ht, 10, 20)
-            pygame.draw.rect(screen, DASHED_LINE_COLOR, dashed_line_dot)
+            pygame.draw.rect(screen, constants.DASHED_LINE_COLOR, dashed_line_dot)
         pong_ball.move(screen)
         pygame.display.flip()
         if pong_ball.check_position():

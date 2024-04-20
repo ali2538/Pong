@@ -2,40 +2,12 @@ import random
 import pygame
 import math
 
-possible_angles_list = [
-    10,
-    15,
-    20,
-    25,
-    30,
-    35,
-    40,
-    45,
-    50,
-    55,
-    60,
-    110,
-    115,
-    120,
-    130,
-    135,
-    140,
-    145,
-    200,
-    210,
-    215,
-    220,
-    320,
-    330,
-    335,
-    340,
-]
+import constants
 
 
 class Ball(pygame.sprite.Sprite):
     def __init__(self, screen, x=510, y=20) -> None:
         pygame.sprite.Sprite.__init__(self)
-        self.WHITE = (255, 255, 255)
         self.width = 20
         self.height = 20
         self.screen_area = screen.get_rect()
@@ -52,27 +24,7 @@ class Ball(pygame.sprite.Sprite):
             [
                 ang
                 for ang in range(20, 340, 5)
-                if ang
-                not in [
-                    70,
-                    75,
-                    80,
-                    85,
-                    90,
-                    95,
-                    100,
-                    105,
-                    110,
-                    250,
-                    255,
-                    260,
-                    265,
-                    270,
-                    275,
-                    280,
-                    285,
-                    290,
-                ]
+                if ang not in constants.INITIAL_ANGLES_TO_AVOID
             ]
         )
         self.angle_in_radian = math.pi * self.angle_in_degrees / 180
@@ -133,4 +85,4 @@ class Ball(pygame.sprite.Sprite):
         self.pong_ball = pygame.Rect(
             self.position_x, self.position_y, self.width, self.height
         )
-        pygame.draw.rect(screen, self.WHITE, self.pong_ball)
+        pygame.draw.rect(screen, constants.WHITE, self.pong_ball)
