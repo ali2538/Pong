@@ -19,7 +19,7 @@ class Ball(pygame.sprite.Sprite):
         self.pong_ball = pygame.Rect(
             self.position_x, self.position_y, self.width, self.height
         )
-        self.speed = 3
+        self.speed = 5
         self.angle_in_degrees = random.choice(
             [
                 ang
@@ -35,7 +35,12 @@ class Ball(pygame.sprite.Sprite):
     def update_angle(self):
         self.angle_in_radian = math.pi * self.angle_in_degrees / 180
 
-    def check_position(self) -> bool:
+    def check_position(self, left_pad, right_pad) -> bool:
+        if self.pong_ball.colliderect(left_pad.pad_rect) or self.pong_ball.colliderect(
+            right_pad.pad_rect
+        ):
+            self.angle_in_degrees -= 90
+            self.update_angle()
         if not self.screen_area.contains(self.pong_ball):
             if (self.pong_ball.top < 5.0 or self.pong_ball.bottom > 590.0) and (
                 (not self.pong_ball.left < 10.0) and (not self.pong_ball.right > 1000.0)
