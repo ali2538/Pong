@@ -21,11 +21,19 @@ def play_pong():
     print(pad2)
     while still_playing:
         screen.fill(color=constants.BLACK)
-        pad1.draw(screen)
-        pad2.draw(screen)
         if new_ball:
             pong_ball = Ball(screen)
             new_ball = False
+        keypressed = pygame.key.get_pressed()
+        if keypressed[pygame.K_UP]:
+            pad2.move_up()
+        if keypressed[pygame.K_DOWN]:
+            pad2.move_down()
+
+        if keypressed[pygame.K_w]:
+            pad1.move_up()
+        if keypressed[pygame.K_s]:
+            pad1.move_down()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 still_playing = False
@@ -34,6 +42,8 @@ def play_pong():
         for ht in range(0, 600, 41):
             dashed_line_dot = pygame.Rect(505, ht, 10, 20)
             pygame.draw.rect(screen, constants.DASHED_LINE_COLOR, dashed_line_dot)
+        pad1.update(screen)
+        pad2.update(screen)
         pong_ball.move(screen)
         pygame.display.flip()
         if pong_ball.check_position():
