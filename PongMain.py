@@ -2,6 +2,33 @@ import pygame
 import constants
 from Ball import Ball
 from Paddle import Paddle
+from Player import Player
+
+
+def create_update_score(left_player_score, right_player_score):
+    font = pygame.font.SysFont("Arial", 38)
+    left_side_text = font.render(
+        str(left_player_score),
+        True,
+        constants.SCORE_TEXT_COLOR,
+        constants.BLACK,
+    )
+    right_side_text = font.render(
+        str(right_player_score),
+        True,
+        constants.SCORE_TEXT_COLOR,
+        constants.BLACK,
+    )
+    left_side_text_rect = left_side_text.get_rect()
+    left_side_text_rect.top = constants.SCORE_BOARD_TOP
+    left_side_text_rect.left = constants.LEFT_SIDE_SCORE_BOARD_LEFT
+    right_side_text_rect = right_side_text.get_rect()
+    right_side_text_rect.top = constants.SCORE_BOARD_TOP
+    right_side_text_rect.left = constants.RIGHT_SIDE_SCORE_BOARD_LEFT
+    return {
+        "left": (left_side_text, left_side_text_rect),
+        "right": (right_side_text, right_side_text_rect),
+    }
 
 
 def play_pong():
@@ -16,11 +43,15 @@ def play_pong():
     pong_ball = None
     new_game = True
     pad1 = Paddle(constants.LEFT_SIDE_PAD, "player1")
-    print(pad1)
+    player_on_left = Player("player1", constants.LEFT_SIDE_PAD)
     pad2 = Paddle(constants.RIGHT_SIDE_PAD, "player2")
-    print(pad2)
+    player_on_right = Player("player2", constants.RIGHT_SIDE_PAD)
+
     while still_playing:
         screen.fill(color=constants.BLACK)
+        scores_list = create_update_score(player_on_left.score, player_on_right.score)
+        screen.blit(scores_list["left"][0], scores_list["left"][1])
+        screen.blit(scores_list["right"][0], scores_list["right"][1])
         if new_ball:
             pong_ball = Ball(screen)
             new_ball = False
