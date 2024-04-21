@@ -76,10 +76,15 @@ def play_pong():
         pad1.update(screen)
         pad2.update(screen)
         pong_ball.move(screen)
-        pygame.display.flip()
-        if pong_ball.check_position(left_pad=pad1, right_pad=pad2):
+        if pong_ball.check_position(
+            left_pad=pad1,
+            right_pad=pad2,
+            left_side_score_update=player_on_left.score_update,
+            right_side_score_update=player_on_right.score_update,
+        ):
             new_ball = True
             del pong_ball
+        pygame.display.flip()
         clock.tick(60)
 
     pygame.quit()

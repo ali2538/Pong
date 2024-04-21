@@ -35,7 +35,9 @@ class Ball(pygame.sprite.Sprite):
     def update_angle(self):
         self.angle_in_radian = math.pi * self.angle_in_degrees / 180
 
-    def check_position(self, left_pad, right_pad) -> bool:
+    def check_position(
+        self, left_pad, right_pad, left_side_score_update, right_side_score_update
+    ) -> bool:
         if self.pong_ball.colliderect(left_pad.pad_rect) or self.pong_ball.colliderect(
             right_pad.pad_rect
         ):
@@ -48,27 +50,23 @@ class Ball(pygame.sprite.Sprite):
                 self.angle_in_degrees = -self.angle_in_degrees
                 self.update_angle()
                 return False
-            if (
-                (self.pong_ball.left < 10.0)
-                or (self.pong_ball.right > 1000.0)
-                or self.screen_area.collidepoint(
-                    self.pong_ball.bottomleft, self.pong_ball.bottomleft
-                )
-                or self.screen_area.collidepoint(
-                    self.pong_ball.topleft, self.pong_ball.topleft
-                )
-                or self.screen_area.collidepoint(
-                    self.pong_ball.bottomright, self.pong_ball.bottomright
-                )
-                or self.screen_area.collidepoint(
-                    self.pong_ball.topright, self.pong_ball.topright
-                )
+            if (self.pong_ball.left < 10.0) and self.screen_area.colliderect(
+                self.pong_ball
             ):
+                right_side_score_update()
                 return True
-            if (self.pong_ball.top < 5.0 or self.pong_ball.bottom > 590.0) and (
-                (self.pong_ball.left < 5.0) or (self.pong_ball.right > 1010.0)
+            if (self.pong_ball.right > 1000.0) and self.screen_area.colliderect(
+                self.pong_ball
             ):
+                left_side_score_update()
                 return True
+            if self.pong_ball.top < 5.0 or self.pong_ball.bottom > 590.0:
+                if self.pong_ball.left < 5.0:
+                    right_side_score_update()
+                    return True
+                if self.pong_ball.right > 1010.0:
+                    left_side_score_update()
+                    return True
 
     def move(self, screen):
         self.position_x = self.position_x + math.cos(self.angle_in_radian) * self.speed
