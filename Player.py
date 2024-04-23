@@ -6,6 +6,9 @@ class Player:
         self.won_current_game = False
         self.games_won = 0
 
+    def reset(self):
+        self.score = 0
+
     def score(self):
         return self.score
 

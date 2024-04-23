@@ -1,4 +1,5 @@
 import pygame
+import pygame_gui
 import constants
 from Ball import Ball
 from Paddle import Paddle
@@ -31,11 +32,22 @@ def create_update_score(left_player_score, right_player_score):
     }
 
 
-def start_game_prompt():
-    font = pygame.font.SysFont("Times New Roman", 48)
-    text = font.render(
-        "Press Enter to Begin", True, constants.SCORE_TEXT_COLOR, constants.BLACK
+def get_player_info(screen, clock):
+    manager = pygame_gui.UIManager((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
+    text_input = pygame_gui.elements.UITextEntryLine(
+        relative_rect=pygame.Rect(
+            constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2, 600, 50
+        ),
+        manager=manager,
+        object_id="#player_name_info",
     )
+    manager.update(clock)
+    manager.draw_ui(screen)
+
+
+def game_prompt(message, player=None):
+    font = pygame.font.SysFont("Times New Roman", 48)
+    text = font.render(message, True, constants.SCORE_TEXT_COLOR, constants.BLACK)
     text_rect = text.get_rect()
     text_rect.top = constants.SCREEN_HEIGHT / 2
     text_rect.left = constants.SCREEN_WIDTH / 2 - text_rect.width / 2
@@ -54,10 +66,7 @@ def play_pong():
     pong_ball = None
     new_game = True
     start_game = False
-    pad1 = Paddle(constants.LEFT_SIDE_PAD, "player1")
-    player_on_left = Player("player1", constants.LEFT_SIDE_PAD)
-    pad2 = Paddle(constants.RIGHT_SIDE_PAD, "player2")
-    player_on_right = Player("player2", constants.RIGHT_SIDE_PAD)
+    player_won = False
 
     while still_playing:
         screen.fill(color=constants.BLACK)
@@ -65,13 +74,41 @@ def play_pong():
         for ht in range(0, 600, 41):
             dashed_line_dot = pygame.Rect(505, ht, 10, 20)
             pygame.draw.rect(screen, constants.DASHED_LINE_COLOR, dashed_line_dot)
-        scores_list = create_update_score(player_on_left.score, player_on_right.score)
-        screen.blit(scores_list["left"][0], scores_list["left"][1])
-        screen.blit(scores_list["right"][0], scores_list["right"][1])
+        if new_game:
+            get_player_info(screen, 60)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                still_playing = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    if not start_game:
+                        start_game = True
+                if event.key == pygame.K_n and player_won:
+                    still_playing = False
+                if event.key == pygame.K_y and player_won:
+                    new_game = True
         if not start_game:
-            initial_prompt = start_game_prompt()
+            initial_prompt = game_prompt("Press Enter to Begin")
             screen.blit(initial_prompt[0], initial_prompt[1])
         if start_game:
+            if new_game:
+                if not player_won:
+                    print(f"beginnsssssssss")
+
+                    pad1 = Paddle(constants.LEFT_SIDE_PAD, "player1")
+                    player_on_left = Player("player1", constants.LEFT_SIDE_PAD)
+                    pad2 = Paddle(constants.RIGHT_SIDE_PAD, "player2")
+                    player_on_right = Player("player2", constants.RIGHT_SIDE_PAD)
+                    new_game = False
+                elif player_won:
+                    print(f"kinda beginssssss")
+                    del pad1
+                    del pad2
+                    pad1 = Paddle(constants.LEFT_SIDE_PAD, "player1")
+                    pad2 = Paddle(constants.RIGHT_SIDE_PAD, "player2")
+                    player_on_left.reset()
+                    player_on_right.reset()
+
             if new_ball:
                 pong_ball = Ball(screen)
                 new_ball = False
@@ -96,13 +133,16 @@ def play_pong():
             ):
                 new_ball = True
                 del pong_ball
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                still_playing = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    if not start_game:
-                        start_game = True
+            if player_on_left.score == 10:
+                game_prompt("Left Wins! \nTo Continue Press Y. N to Quit.")
+                player_won = True
+            elif player_on_right.score == 10:
+                game_prompt("Left Wins! \nTo Continue Press Y. N to Quit.")
+                player_won = True
+
+        # scores_list = create_update_score(player_on_left.score, player_on_right.score)
+        # screen.blit(scores_list["left"][0], scores_list["left"][1])
+        # screen.blit(scores_list["right"][0], scores_list["right"][1])
 
         pygame.display.flip()
         clock.tick(60)
