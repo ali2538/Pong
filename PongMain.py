@@ -1,5 +1,4 @@
 import pygame
-import pygame_gui
 import constants
 from Ball import Ball
 from Paddle import Paddle
@@ -7,7 +6,7 @@ from Player import Player
 
 
 def create_update_score(left_player_score, right_player_score):
-    font = pygame.font.SysFont("Arial", 38)
+    font = pygame.font.SysFont("Arial", 46)
     left_side_text = font.render(
         str(left_player_score),
         True,
@@ -21,31 +20,18 @@ def create_update_score(left_player_score, right_player_score):
         constants.BLACK,
     )
     left_side_text_rect = left_side_text.get_rect()
-    left_side_text_rect.top = constants.SCORE_BOARD_TOP
-    left_side_text_rect.left = constants.LEFT_SIDE_SCORE_BOARD_LEFT
+    left_side_text_rect.top = 50
+    left_side_text_rect.left = constants.SCREEN_WIDTH / 2 - 60
     right_side_text_rect = right_side_text.get_rect()
-    right_side_text_rect.top = constants.SCORE_BOARD_TOP
-    right_side_text_rect.left = constants.RIGHT_SIDE_SCORE_BOARD_LEFT
+    right_side_text_rect.top = 50
+    right_side_text_rect.left = constants.SCREEN_WIDTH / 2 + 40
     return {
         "left": (left_side_text, left_side_text_rect),
         "right": (right_side_text, right_side_text_rect),
     }
 
 
-def get_player_info(screen, clock):
-    manager = pygame_gui.UIManager((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
-    text_input = pygame_gui.elements.UITextEntryLine(
-        relative_rect=pygame.Rect(
-            constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2, 600, 50
-        ),
-        manager=manager,
-        object_id="#player_name_info",
-    )
-    manager.update(clock)
-    manager.draw_ui(screen)
-
-
-def game_prompt(message, player=None):
+def game_prompt(message):
     font = pygame.font.SysFont("Times New Roman", 48)
     text = font.render(message, True, constants.SCORE_TEXT_COLOR, constants.BLACK)
     text_rect = text.get_rect()
@@ -65,50 +51,31 @@ def play_pong():
     new_ball = True
     pong_ball = None
     new_game = True
-    start_game = False
+    game_starting = True
     player_won = False
+    pause = False
+    play_on = True
+
+    pad1 = Paddle(constants.LEFT_SIDE_PAD, "player1")
+    player_on_left = Player("player1-left", constants.LEFT_SIDE_PAD)
+    pad2 = Paddle(constants.RIGHT_SIDE_PAD, "player2")
+    player_on_right = Player("player2-right", constants.RIGHT_SIDE_PAD)
 
     while still_playing:
         screen.fill(color=constants.BLACK)
         # draw a line in the middle of the screen
-        for ht in range(0, 600, 41):
-            dashed_line_dot = pygame.Rect(505, ht, 10, 20)
+        for ht in range(0, constants.SCREEN_HEIGHT, 41):
+            dashed_line_dot = pygame.Rect(constants.SCREEN_WIDTH / 2, ht, 10, 20)
             pygame.draw.rect(screen, constants.DASHED_LINE_COLOR, dashed_line_dot)
-        if new_game:
-            get_player_info(screen, 60)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                still_playing = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    if not start_game:
-                        start_game = True
-                if event.key == pygame.K_n and player_won:
-                    still_playing = False
-                if event.key == pygame.K_y and player_won:
-                    new_game = True
-        if not start_game:
-            initial_prompt = game_prompt("Press Enter to Begin")
+        scores_list = create_update_score(player_on_left.score, player_on_right.score)
+        screen.blit(scores_list["left"][0], scores_list["left"][1])
+        screen.blit(scores_list["right"][0], scores_list["right"][1])
+        if game_starting:
+            start_game_message = "Press Enter to Start the Game - Esq to Quit"
+            initial_prompt = game_prompt(start_game_message)
             screen.blit(initial_prompt[0], initial_prompt[1])
-        if start_game:
-            if new_game:
-                if not player_won:
-                    print(f"beginnsssssssss")
-
-                    pad1 = Paddle(constants.LEFT_SIDE_PAD, "player1")
-                    player_on_left = Player("player1", constants.LEFT_SIDE_PAD)
-                    pad2 = Paddle(constants.RIGHT_SIDE_PAD, "player2")
-                    player_on_right = Player("player2", constants.RIGHT_SIDE_PAD)
-                    new_game = False
-                elif player_won:
-                    print(f"kinda beginssssss")
-                    del pad1
-                    del pad2
-                    pad1 = Paddle(constants.LEFT_SIDE_PAD, "player1")
-                    pad2 = Paddle(constants.RIGHT_SIDE_PAD, "player2")
-                    player_on_left.reset()
-                    player_on_right.reset()
-
+            game_starting = False
+        if play_on:
             if new_ball:
                 pong_ball = Ball(screen)
                 new_ball = False
@@ -133,16 +100,42 @@ def play_pong():
             ):
                 new_ball = True
                 del pong_ball
-            if player_on_left.score == 10:
-                game_prompt("Left Wins! \nTo Continue Press Y. N to Quit.")
+            if player_on_right.score == 3:
                 player_won = True
-            elif player_on_right.score == 10:
-                game_prompt("Left Wins! \nTo Continue Press Y. N to Quit.")
+                win_message = (
+                    f"{player_on_right.name} Wins - Enter to Replay Esq to Quit"
+                )
+                player_on_right.games_won += 1
+                play_on = False
+            elif player_on_left.score == 3:
                 player_won = True
-
-        # scores_list = create_update_score(player_on_left.score, player_on_right.score)
-        # screen.blit(scores_list["left"][0], scores_list["left"][1])
-        # screen.blit(scores_list["right"][0], scores_list["right"][1])
+                win_message = (
+                    f"{player_on_left.name} Wins - Enter to Replay Esq to Quit"
+                )
+                player_on_left.games_won += 1
+                play_on = False
+        if player_won:
+            win_prompt = game_prompt(win_message)
+            screen.blit(win_prompt[0], win_prompt[1])
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                still_playing = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    if not game_starting:
+                        game_starting = True
+                    if player_won:
+                        new_game = True
+                        player_on_left.reset()
+                        player_on_right.reset()
+                        game_starting = False
+                        player_won = False
+                        play_on = True
+                if event.key == pygame.K_ESCAPE:
+                    if player_won:
+                        still_playing = False
+                    if not game_starting:
+                        still_playing = False
 
         pygame.display.flip()
         clock.tick(60)
