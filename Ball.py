@@ -29,9 +29,6 @@ class Ball(pygame.sprite.Sprite):
         )
         self.angle_in_radian = math.pi * self.angle_in_degrees / 180
 
-    def __del__(self):
-        print("Object removed")
-
     def update_angle(self):
         self.angle_in_radian = math.pi * self.angle_in_degrees / 180
 
@@ -47,7 +44,6 @@ class Ball(pygame.sprite.Sprite):
             self.angle_in_degrees -= 90
             self.update_angle()
             self.increase_speed()
-            print(f"speed is {self.speed}")
         if not self.screen_area.contains(self.pong_ball):
             if (
                 self.pong_ball.top < 2

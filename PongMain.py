@@ -51,10 +51,10 @@ def play_pong():
     new_ball = True
     pong_ball = None
     new_game = True
-    game_starting = True
+    prompt_before_game_start = True
     player_won = False
     pause = False
-    play_on = True
+    play_on = False
 
     pad1 = Paddle(constants.LEFT_SIDE_PAD, "player1")
     player_on_left = Player("player1-left", constants.LEFT_SIDE_PAD)
@@ -70,11 +70,10 @@ def play_pong():
         scores_list = create_update_score(player_on_left.score, player_on_right.score)
         screen.blit(scores_list["left"][0], scores_list["left"][1])
         screen.blit(scores_list["right"][0], scores_list["right"][1])
-        if game_starting:
+        if prompt_before_game_start:
             start_game_message = "Press Enter to Start the Game - Esq to Quit"
             initial_prompt = game_prompt(start_game_message)
             screen.blit(initial_prompt[0], initial_prompt[1])
-            game_starting = False
         if play_on:
             if new_ball:
                 pong_ball = Ball(screen)
@@ -122,19 +121,18 @@ def play_pong():
                 still_playing = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    if not game_starting:
-                        game_starting = True
+                    if prompt_before_game_start:
+                        prompt_before_game_start = False
+                        play_on = True
                     if player_won:
                         new_game = True
                         player_on_left.reset()
                         player_on_right.reset()
-                        game_starting = False
+                        prompt_before_game_start = True
                         player_won = False
-                        play_on = True
+                        play_on = False
                 if event.key == pygame.K_ESCAPE:
-                    if player_won:
-                        still_playing = False
-                    if not game_starting:
+                    if prompt_before_game_start or player_won:
                         still_playing = False
 
         pygame.display.flip()
