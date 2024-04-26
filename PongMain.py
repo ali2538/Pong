@@ -99,14 +99,14 @@ def play_pong():
             ):
                 new_ball = True
                 del pong_ball
-            if player_on_right.score == 3:
+            if player_on_right.score == 10:
                 player_won = True
                 win_message = (
                     f"{player_on_right.name} Wins - Enter to Replay Esq to Quit"
                 )
                 player_on_right.games_won += 1
                 play_on = False
-            elif player_on_left.score == 3:
+            elif player_on_left.score == 10:
                 player_won = True
                 win_message = (
                     f"{player_on_left.name} Wins - Enter to Replay Esq to Quit"
